@@ -1,3 +1,10 @@
+/*
+ * EventControl - Advanced Event Management Plugin
+ * Copyright (c) 2025 IONNetwork
+ *
+ * This plugin allows server administrators to control and cancel
+ * Bukkit events with support for global, world, and region scopes.
+ */
 package de.ionnetwork.eventcontrol
 
 import de.ionnetwork.eventcontrol.commands.EventControlCommand
@@ -9,6 +16,10 @@ import org.bukkit.plugin.java.JavaPlugin
  * EventControl allows server administrators to cancel specific events globally,
  * per-world, or in specific regions. It uses reflection to discover all available
  * Bukkit events and supports versions 1.8 through 1.21+
+ *
+ * @author IONNetwork
+ * @version 1.0.0
+ * @since 2025
  */
 class EventControlPlugin : JavaPlugin() {
 
@@ -17,19 +28,15 @@ class EventControlPlugin : JavaPlugin() {
     private lateinit var eventListener: DynamicEventListener
 
     override fun onEnable() {
-        logger.info("=================================================")
-        logger.info("EventControl v${description.version} by IONNetwork")
-        logger.info("=================================================")
-
         try {
-            // Initialize components
+            // Initialize components (must be first)
             initializeComponents()
+
+            // Load configuration (must be before discovery to get debug setting)
+            loadConfiguration()
 
             // Discover events
             discoverEvents()
-
-            // Load configuration
-            loadConfiguration()
 
             // Register event listeners
             registerEventListeners()
@@ -37,10 +44,9 @@ class EventControlPlugin : JavaPlugin() {
             // Register commands
             registerCommands()
 
-            logger.info("EventControl enabled successfully!")
-            logger.info("Registered ${eventListener.getRegisteredCount()} event listeners")
-            logger.info("Loaded ${configManager.getAllEventRules().size} event rules")
-            logger.info("Loaded ${configManager.getAllRegions().size} regions")
+            // Show startup message
+            logger.info("EventControl v${description.version} by IONNetwork | ${eventListener.getRegisteredCount()} listeners | ${configManager.getAllEventRules().size} rules | ${configManager.getAllRegions().size} regions")
+            logger.info("Website: https://www.ion-network.de | GitHub: https://github.com/IONNetworkTeam")
 
         } catch (e: Exception) {
             logger.severe("Failed to enable EventControl!")
@@ -50,8 +56,6 @@ class EventControlPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        logger.info("EventControl disabled")
-
         // Unregister all event listeners
         if (::eventListener.isInitialized) {
             eventListener.unregisterAll()
@@ -61,16 +65,18 @@ class EventControlPlugin : JavaPlugin() {
         if (::configManager.isInitialized) {
             configManager.save()
         }
+
+        if (::configManager.isInitialized && configManager.debugEnabled) {
+            logger.info("EventControl disabled")
+        }
     }
 
     /**
      * Initialize core components
      */
     private fun initializeComponents() {
-        logger.info("Initializing components...")
-
-        eventDiscovery = EventDiscovery(logger)
         configManager = ConfigManager(dataFolder, logger)
+        eventDiscovery = EventDiscovery(logger) { configManager.debugEnabled }
         eventListener = DynamicEventListener(this, configManager, eventDiscovery, logger)
     }
 
@@ -78,43 +84,57 @@ class EventControlPlugin : JavaPlugin() {
      * Discover all Bukkit events
      */
     private fun discoverEvents() {
-        logger.info("Discovering Bukkit events...")
+        if (configManager.debugEnabled) {
+            logger.info("Discovering Bukkit events...")
+        }
 
         val discoveredEvents = eventDiscovery.discoverEvents()
 
         // Save discovered events to JSON
         configManager.saveDiscoveredEvents(discoveredEvents)
 
-        logger.info("Event discovery complete")
+        if (configManager.debugEnabled) {
+            logger.info("Event discovery complete")
+        }
     }
 
     /**
      * Load configuration from disk
      */
     private fun loadConfiguration() {
-        logger.info("Loading configuration...")
+        if (configManager.debugEnabled) {
+            logger.info("Loading configuration...")
+        }
 
         configManager.load()
 
-        logger.info("Configuration loaded")
+        if (configManager.debugEnabled) {
+            logger.info("Configuration loaded")
+        }
     }
 
     /**
      * Register dynamic event listeners
      */
     private fun registerEventListeners() {
-        logger.info("Registering event listeners...")
+        if (configManager.debugEnabled) {
+            logger.info("Registering event listeners...")
+        }
 
         eventListener.registerAllEvents()
 
-        logger.info("Event listeners registered")
+        if (configManager.debugEnabled) {
+            logger.info("Event listeners registered")
+        }
     }
 
     /**
      * Register commands
      */
     private fun registerCommands() {
-        logger.info("Registering commands...")
+        if (configManager.debugEnabled) {
+            logger.info("Registering commands...")
+        }
 
         // Register /eventcontrol command (includes region management)
         val eventControlCmd = getCommand("eventcontrol")
@@ -122,7 +142,9 @@ class EventControlPlugin : JavaPlugin() {
         eventControlCmd?.setExecutor(eventControlHandler)
         eventControlCmd?.tabCompleter = eventControlHandler
 
-        logger.info("Commands registered")
+        if (configManager.debugEnabled) {
+            logger.info("Commands registered")
+        }
     }
 
     /**

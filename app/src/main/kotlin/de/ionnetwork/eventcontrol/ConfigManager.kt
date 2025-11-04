@@ -1,3 +1,10 @@
+/*
+ * EventControl - Advanced Event Management Plugin
+ * Copyright (c) 2025 IONNetwork
+ *
+ * This plugin allows server administrators to control and cancel
+ * Bukkit events with support for global, world, and region scopes.
+ */
 package de.ionnetwork.eventcontrol
 
 import kotlinx.serialization.encodeToString
@@ -7,6 +14,8 @@ import java.util.logging.Logger
 
 /**
  * Manages loading and saving of event control configuration
+ *
+ * @author IONNetwork
  */
 class ConfigManager(
     private val dataFolder: File,
@@ -24,6 +33,9 @@ class ConfigManager(
     private val regions = mutableMapOf<String, Region>()
     private val eventRules = mutableMapOf<String, MutableList<EventRule>>()
 
+    var debugEnabled: Boolean = false
+        private set
+
     init {
         if (!dataFolder.exists()) {
             dataFolder.mkdirs()
@@ -39,6 +51,9 @@ class ConfigManager(
                 val content = configFile.readText()
                 config = json.decodeFromString<EventControlConfig>(content)
 
+                // Set debug mode
+                debugEnabled = config.debug
+
                 // Build lookup maps
                 config.regions.forEach { region ->
                     regions[region.name] = region
@@ -48,9 +63,18 @@ class ConfigManager(
                     eventRules.getOrPut(rule.eventName) { mutableListOf() }.add(rule)
                 }
 
-                logger.info("Loaded configuration: ${config.events.size} rules, ${config.regions.size} regions")
+                if (debugEnabled) {
+                    logger.info("Loaded configuration: ${config.events.size} rules, ${config.regions.size} regions")
+                    logger.info("Debug mode: ENABLED")
+                }
             } else {
-                logger.info("No existing configuration found, using defaults")
+                // Create default config with debug disabled
+                config = EventControlConfig(
+                    events = emptyList(),
+                    regions = emptyList(),
+                    debug = false
+                )
+                debugEnabled = false
                 save()
             }
         } catch (e: Exception) {
@@ -66,13 +90,16 @@ class ConfigManager(
         try {
             val updatedConfig = EventControlConfig(
                 events = eventRules.values.flatten(),
-                regions = regions.values.toList()
+                regions = regions.values.toList(),
+                debug = debugEnabled
             )
 
             val content = json.encodeToString(updatedConfig)
             configFile.writeText(content)
 
-            logger.info("Saved configuration")
+            if (debugEnabled) {
+                logger.info("Saved configuration")
+            }
         } catch (e: Exception) {
             logger.severe("Error saving configuration: ${e.message}")
             e.printStackTrace()

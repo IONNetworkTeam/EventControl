@@ -3,6 +3,7 @@ version: 1.0.0
 main: de.ionnetwork.eventcontrol.EventControlPlugin
 api-version: 1.13
 author: IONNetwork
+website: https://www.ion-network.de
 description: Advanced event control plugin with per-world, global, and region-based event cancellation
 
 commands:

@@ -151,9 +151,21 @@ The plugin creates the following files in the `plugins/EventControl` directory:
       "pos2": {"x": 200.0, "y": 128.0, "z": 200.0},
       "description": "Protected spawn area"
     }
-  ]
+  ],
+  "debug": false
 }
 ```
+
+### Configuration Options
+
+- `events` - List of event cancellation rules
+- `regions` - List of defined regions
+- `debug` - Enable debug logging (default: false)
+  - When `true`, logs detailed information about event discovery, registration, and cancellation
+  - When `false`, shows only a single-line startup message
+  - Recommended to keep disabled in production for cleaner logs and better performance
+
+**Note:** The config file is automatically created on first startup with `debug: false` by default.
 
 ## How It Works
 
@@ -224,4 +236,7 @@ Dependencies are managed through a version catalog in `gradle/libs.versions.toml
 
 ## Credits
 
-Developed by IONNetwork
+Developed by **IONNetwork**
+
+- Website: [https://www.ion-network.de](https://www.ion-network.de)
+- GitHub: [https://github.com/IONNetworkTeam](https://github.com/IONNetworkTeam)

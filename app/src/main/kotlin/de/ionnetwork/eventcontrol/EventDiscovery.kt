@@ -1,3 +1,10 @@
+/*
+ * EventControl - Advanced Event Management Plugin
+ * Copyright (c) 2025 IONNetwork
+ *
+ * This plugin allows server administrators to control and cancel
+ * Bukkit events with support for global, world, and region scopes.
+ */
 package de.ionnetwork.eventcontrol
 
 import kotlinx.serialization.Serializable
@@ -11,8 +18,13 @@ import java.util.logging.Logger
 
 /**
  * Discovers all Bukkit events using reflection
+ *
+ * @author IONNetwork
  */
-class EventDiscovery(private val logger: Logger) {
+class EventDiscovery(
+    private val logger: Logger,
+    private val debugEnabled: () -> Boolean = { false }
+) {
 
     private val discoveredEvents = mutableMapOf<String, Class<out Event>>()
     private val cancellableEvents = mutableSetOf<String>()
@@ -21,13 +33,17 @@ class EventDiscovery(private val logger: Logger) {
      * Scan and discover all Bukkit events
      */
     fun discoverEvents(): Map<String, EventInfo> {
-        logger.info("Starting event discovery...")
+        if (debugEnabled()) {
+            logger.info("Starting event discovery...")
+        }
 
         try {
             // Scan org.bukkit.event package for all Event subclasses
             scanBukkitEvents()
 
-            logger.info("Discovered ${discoveredEvents.size} events (${cancellableEvents.size} cancellable)")
+            if (debugEnabled()) {
+                logger.info("Discovered ${discoveredEvents.size} events (${cancellableEvents.size} cancellable)")
+            }
 
         } catch (e: Exception) {
             logger.severe("Error during event discovery: ${e.message}")
@@ -167,7 +183,9 @@ class EventDiscovery(private val logger: Logger) {
                 cancellableEvents.add(simpleName)
             }
 
-            logger.fine("Discovered event: $simpleName (cancellable: ${cancellableEvents.contains(simpleName)})")
+            if (debugEnabled()) {
+                logger.info("Discovered event: $simpleName (cancellable: ${cancellableEvents.contains(simpleName)})")
+            }
 
         } catch (e: Exception) {
             logger.warning("Error processing event class ${clazz.name}: ${e.message}")

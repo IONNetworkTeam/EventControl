@@ -1,3 +1,10 @@
+/*
+ * EventControl - Advanced Event Management Plugin
+ * Copyright (c) 2025 IONNetwork
+ *
+ * This plugin allows server administrators to control and cancel
+ * Bukkit events with support for global, world, and region scopes.
+ */
 package de.ionnetwork.eventcontrol
 
 import kotlinx.serialization.Serializable
@@ -5,6 +12,8 @@ import org.bukkit.Location
 
 /**
  * Represents a rule for event cancellation
+ *
+ * @author IONNetwork
  */
 @Serializable
 data class EventRule(
@@ -85,5 +94,6 @@ data class SerializableLocation(
 @Serializable
 data class EventControlConfig(
     val events: List<EventRule> = emptyList(),
-    val regions: List<Region> = emptyList()
+    val regions: List<Region> = emptyList(),
+    val debug: Boolean = false
 )

@@ -1,3 +1,10 @@
+/*
+ * EventControl - Advanced Event Management Plugin
+ * Copyright (c) 2025 IONNetwork
+ *
+ * This plugin allows server administrators to control and cancel
+ * Bukkit events with support for global, world, and region scopes.
+ */
 package de.ionnetwork.eventcontrol.commands
 
 import de.ionnetwork.eventcontrol.ConfigManager

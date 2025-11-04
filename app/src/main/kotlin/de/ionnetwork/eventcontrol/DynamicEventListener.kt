@@ -1,3 +1,10 @@
+/*
+ * EventControl - Advanced Event Management Plugin
+ * Copyright (c) 2025 IONNetwork
+ *
+ * This plugin allows server administrators to control and cancel
+ * Bukkit events with support for global, world, and region scopes.
+ */
 package de.ionnetwork.eventcontrol
 
 import org.bukkit.Location
@@ -11,6 +18,8 @@ import java.util.logging.Logger
 
 /**
  * Dynamically registers and handles event cancellation
+ *
+ * @author IONNetwork
  */
 class DynamicEventListener(
     private val plugin: Plugin,
@@ -25,7 +34,9 @@ class DynamicEventListener(
      * Register all discovered cancellable events
      */
     fun registerAllEvents() {
-        logger.info("Registering dynamic event listeners...")
+        if (configManager.debugEnabled) {
+            logger.info("Registering dynamic event listeners...")
+        }
 
         val eventNames = eventDiscovery.getEventNames()
 
@@ -33,7 +44,9 @@ class DynamicEventListener(
             registerEvent(eventName)
         }
 
-        logger.info("Registered ${registeredEvents.size} event listeners")
+        if (configManager.debugEnabled) {
+            logger.info("Registered ${registeredEvents.size} event listeners")
+        }
     }
 
     /**
@@ -71,7 +84,9 @@ class DynamicEventListener(
             )
 
             registeredEvents.add(eventName)
-            logger.fine("Registered event listener: $eventName")
+            if (configManager.debugEnabled) {
+                logger.info("Registered event listener: $eventName")
+            }
             return true
 
         } catch (e: Exception) {
@@ -98,7 +113,9 @@ class DynamicEventListener(
 
             if (shouldCancel) {
                 event.isCancelled = true
-                logger.fine("Cancelled event: $eventName in world $worldName")
+                if (configManager.debugEnabled) {
+                    logger.info("Cancelled event: $eventName in world $worldName at location ${location?.let { "(${it.blockX}, ${it.blockY}, ${it.blockZ})" } ?: "unknown"}")
+                }
             }
 
         } catch (e: Exception) {
@@ -180,7 +197,9 @@ class DynamicEventListener(
     fun unregisterAll() {
         org.bukkit.event.HandlerList.unregisterAll(this)
         registeredEvents.clear()
-        logger.info("Unregistered all event listeners")
+        if (configManager.debugEnabled) {
+            logger.info("Unregistered all event listeners")
+        }
     }
 
     /**
