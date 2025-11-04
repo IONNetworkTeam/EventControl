@@ -12,14 +12,6 @@ A powerful Minecraft plugin for controlling and canceling Bukkit events with sup
 - **Tab Completion**: Full tab completion support for all commands
 - **Real-time Updates**: Changes take effect immediately without server restart
 
-## Installation
-
-1. Build the plugin using `./gradlew build`
-2. Find the compiled plugin at `build/libs/EventControl.jar`
-3. Place the JAR file in your server's `plugins` folder
-4. Restart your server
-5. The plugin will automatically discover all available events and create configuration files
-
 ## Commands
 
 ### EventControl Commands
@@ -62,27 +54,6 @@ All permissions default to `op` only for security.
 - `eventcontrol.region.delete` - Delete regions
 - `eventcontrol.region.manage` - Manage event rules for regions, view region list and info
 
-### Command-Specific Permissions
-
-| Command | Required Permission |
-|---------|-------------------|
-| `/ec` or `/ec help` | Any EventControl permission |
-| `/ec list` | `eventcontrol.admin` |
-| `/ec cancel <event> global` | `eventcontrol.admin` OR `eventcontrol.events.global` |
-| `/ec cancel <event> world` | `eventcontrol.admin` OR `eventcontrol.events.world` |
-| `/ec cancel <event> region` | `eventcontrol.admin` OR `eventcontrol.region.manage` |
-| `/ec allow <event> global` | `eventcontrol.admin` OR `eventcontrol.events.global` |
-| `/ec allow <event> world` | `eventcontrol.admin` OR `eventcontrol.events.world` |
-| `/ec allow <event> region` | `eventcontrol.admin` OR `eventcontrol.region.manage` |
-| `/ec info` | `eventcontrol.admin` |
-| `/ec events` | `eventcontrol.admin` |
-| `/ec reload` | `eventcontrol.admin` |
-| `/ec region pos1/pos2` | `eventcontrol.admin` OR `eventcontrol.region.create` |
-| `/ec region create` | `eventcontrol.admin` OR `eventcontrol.region.create` |
-| `/ec region delete` | `eventcontrol.admin` OR `eventcontrol.region.delete` |
-| `/ec region list` | `eventcontrol.admin` OR `eventcontrol.region.manage` OR `eventcontrol.region.create` |
-| `/ec region info` | `eventcontrol.admin` OR `eventcontrol.region.manage` OR `eventcontrol.region.create` |
-
 ## Usage Examples
 
 ### Cancel player damage globally
@@ -116,56 +87,6 @@ All permissions default to `op` only for security.
 /ec events
 /ec events player    # Filter events containing "player"
 ```
-
-## Configuration Files
-
-The plugin creates the following files in the `plugins/EventControl` directory:
-
-- `config.json` - Stores all event rules and regions
-- `discovered_events.json` - Lists all discovered Bukkit events with their properties
-
-### Example config.json
-```json
-{
-  "events": [
-    {
-      "eventName": "BlockBreakEvent",
-      "scope": "GLOBAL",
-      "enabled": true,
-      "worldName": null,
-      "regionName": null
-    },
-    {
-      "eventName": "PlayerInteractEvent",
-      "scope": "REGION",
-      "enabled": true,
-      "worldName": null,
-      "regionName": "spawn"
-    }
-  ],
-  "regions": [
-    {
-      "name": "spawn",
-      "worldName": "world",
-      "pos1": {"x": 100.0, "y": 64.0, "z": 100.0},
-      "pos2": {"x": 200.0, "y": 128.0, "z": 200.0},
-      "description": "Protected spawn area"
-    }
-  ],
-  "debug": false
-}
-```
-
-### Configuration Options
-
-- `events` - List of event cancellation rules
-- `regions` - List of defined regions
-- `debug` - Enable debug logging (default: false)
-  - When `true`, logs detailed information about event discovery, registration, and cancellation
-  - When `false`, shows only a single-line startup message
-  - Recommended to keep disabled in production for cleaner logs and better performance
-
-**Note:** The config file is automatically created on first startup with `debug: false` by default.
 
 ## How It Works
 
@@ -203,38 +124,3 @@ The compiled plugin will be available in `build/libs/EventControl.jar`
 Other useful Gradle commands:
 * Run `./gradlew clean` to clean all build outputs
 * Run `./gradlew shadowJar` to build the plugin with dependencies
-
-## Technical Details
-
-### Reflection-Based Discovery
-
-The plugin uses Java reflection to scan the `org.bukkit.event` package and discover all Event subclasses. This approach ensures compatibility across versions without hardcoding event names.
-
-### Event Listener Registration
-
-EventControl uses Bukkit's `PluginManager.registerEvent()` method with a dynamic `EventExecutor` to handle events at runtime. This allows the plugin to listen to events without creating individual listener methods.
-
-### Region System
-
-Regions are defined by two 3D coordinates (positions) and use simple AABB (Axis-Aligned Bounding Box) collision detection to determine if an event occurs within the region.
-
-### Performance
-
-- Event discovery occurs only once at startup
-- Event checking uses efficient HashMap lookups
-- Region checks use simple coordinate comparisons
-- Minimal performance impact on server TPS
-
-## Project Structure
-
-This is a single-module Gradle project:
-- `src/main/kotlin` - Plugin source code
-- `src/main/resources` - Plugin resources (plugin.yml)
-- `build.gradle.kts` - Build configuration
-
-## Credits
-
-Developed by **IONNetwork**
-
-- Website: [https://www.ion-network.de](https://www.ion-network.de)
-- GitHub: [https://github.com/IONNetworkTeam](https://github.com/IONNetworkTeam)
