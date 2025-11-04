@@ -15,7 +15,7 @@ A powerful Minecraft plugin for controlling and canceling Bukkit events with sup
 ## Installation
 
 1. Build the plugin using `./gradlew build`
-2. Find the compiled plugin at `app/build/libs/EventControl.jar`
+2. Find the compiled plugin at `build/libs/EventControl.jar`
 3. Place the JAR file in your server's `plugins` folder
 4. Restart your server
 5. The plugin will automatically discover all available events and create configuration files
@@ -198,7 +198,7 @@ This project uses [Gradle](https://gradle.org/).
 ./gradlew build
 ```
 
-The compiled plugin will be available in `app/build/libs/EventControl.jar`
+The compiled plugin will be available in `build/libs/EventControl.jar`
 
 Other useful Gradle commands:
 * Run `./gradlew clean` to clean all build outputs
@@ -227,12 +227,10 @@ Regions are defined by two 3D coordinates (positions) and use simple AABB (Axis-
 
 ## Project Structure
 
-This project follows a multi-module Gradle setup:
-- `app` - Main plugin code
-- `utils` - Shared utilities
-- `buildSrc` - Build convention plugins
-
-Dependencies are managed through a version catalog in `gradle/libs.versions.toml`.
+This is a single-module Gradle project:
+- `src/main/kotlin` - Plugin source code
+- `src/main/resources` - Plugin resources (plugin.yml)
+- `build.gradle.kts` - Build configuration
 
 ## Credits
 

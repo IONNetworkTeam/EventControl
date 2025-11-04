@@ -1,10 +1,11 @@
 plugins {
-    // Apply the shared build logic from a convention plugin.
-    // The shared code is located in `buildSrc/src/main/kotlin/kotlin-jvm.gradle.kts`.
-    id("buildsrc.convention.kotlin-jvm")
+    kotlin("jvm") version "2.2.20"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    alias(libs.plugins.kotlinPluginSerialization)
+    kotlin("plugin.serialization") version "2.2.20"
 }
+
+group = "de.ionnetwork"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -23,10 +24,11 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 
     // Kotlinx serialization for JSON
-    implementation(libs.kotlinxSerialization)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+}
 
-    // Project dependencies
-    implementation(project(":utils"))
+kotlin {
+    jvmToolchain(17)
 }
 
 tasks {
@@ -41,5 +43,11 @@ tasks {
 
     build {
         dependsOn(shadowJar)
+    }
+
+    processResources {
+        filesMatching("plugin.yml") {
+            expand("version" to project.version)
+        }
     }
 }
