@@ -1,0 +1,32 @@
+name: EventControl
+version: 1.0.0
+main: de.ionnetwork.eventcontrol.EventControlPlugin
+api-version: 1.13
+author: IONNetwork
+description: Advanced event control plugin with per-world, global, and region-based event cancellation
+
+commands:
+  eventcontrol:
+    description: Main EventControl command
+    usage: /eventcontrol <subcommand> [args]
+    aliases: [ec, events]
+
+permissions:
+  eventcontrol.admin:
+    description: Full access to all EventControl features
+    default: op
+  eventcontrol.region.create:
+    description: Create regions
+    default: op
+  eventcontrol.region.delete:
+    description: Delete regions
+    default: op
+  eventcontrol.region.manage:
+    description: Manage region event rules
+    default: op
+  eventcontrol.events.global:
+    description: Manage global event rules
+    default: op
+  eventcontrol.events.world:
+    description: Manage world-specific event rules
+    default: op
